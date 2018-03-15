@@ -10,7 +10,8 @@
   "scripts": {
     "build": "babel src --out-dir dist",
     "precommit": "npm run build && git add dist",
-    "prepublish": "npm run precommit"
+    "prepublish": "npm run precommit",
+    "release": "np"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
