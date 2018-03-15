@@ -1,0 +1,22 @@
+{
+  "name": "screentimer",
+  "version": "1.0.0",
+  "description": "An ES6 class, jQuery-free version of robflaherty/screentime.",
+  "main": "dist/index.js",
+  "module": "src/index.js",
+  "repository": "https://github.com/kohlmannj/screentimer",
+  "author": "Joseph Kohlmann <joseph.kohlmann@nytimes.com>",
+  "license": "MIT",
+  "scripts": {
+    "build": "babel src --out-dir dist",
+    "precommit": "npm run build && git add dist",
+    "prepublish": "npm run precommit"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-stage-2": "^6.24.1",
+    "husky": "^0.14.3",
+    "np": "^2.20.1"
+  }
+}
