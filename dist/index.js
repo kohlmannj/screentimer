@@ -139,6 +139,11 @@
       key: 'onScreen',
       value: function onScreen() {
         var element = typeof this.element === 'function' ? this.element() : this.element;
+
+        if (!element) {
+          return false;
+        }
+
         var field = element.getBoundingClientRect();
         var viewport = getWindowBounds();
 

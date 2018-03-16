@@ -64,6 +64,11 @@ export default class Screentimer {
 
   onScreen() {
     const element = typeof this.element === 'function' ? this.element() : this.element;
+
+    if (!element) {
+      return false;
+    }
+
     const field = element.getBoundingClientRect();
     const viewport = getWindowBounds();
 
