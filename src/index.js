@@ -2,31 +2,22 @@ export const defaults = {
   callback: () => {},
   lookInterval: 1,
   reportInterval: 10,
-  threshold: 0.5,
 };
 
-export function getWindowScrollTop() {
-  if (typeof pageYOffset !== 'undefined') {
-      // Most browsers except IE before 9
-      return pageYOffset;
-  } else {
-    const B = document.body; // IE 'quirks'
-    let D = document.documentElement; // IE with doctype
-    D = (D.clientHeight) ? D : B;
-    return D.scrollTop;
-  }
-}
-
-export function getWindowBounds() {
-  const top = getWindowScrollTop();
-  const height = window.innerHeight;
-
-  return {
-    bottom: top + height,
-    height,
-    top: getWindowScrollTop(),
-    width: window.innerWidth
-  }
+/*! isInViewport.js | (c) 2017 Chris Ferdinandi | MIT License | http://github.com/cferdinandi/isInViewport */
+/**
+ * Determine if an element is in the viewport
+ * @param  {Node}    elem The element
+ * @return {Boolean}      Returns true if element is in the viewport
+ */
+export function isInViewport(elem) {
+  var distance = elem.getBoundingClientRect();
+  return (
+      distance.top >= 0 &&
+      distance.left >= 0 &&
+      distance.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+      distance.right <= (window.innerWidth || document.documentElement.clientWidth)
+  );
 }
 
 export default class Screentimer {
@@ -69,34 +60,7 @@ export default class Screentimer {
       return false;
     }
 
-    const field = element.getBoundingClientRect();
-    const viewport = getWindowBounds();
-
-    let cond;
-    let buffered;
-    let partialView;
-
-    // Field entirely within viewport
-    if ((field.bottom <= viewport.bottom) && (field.top >= 0)) {
-      return true;
-    }
-
-     // Field bigger than viewport
-    if (field.height > viewport.height) {
-
-      cond = (viewport.bottom - field.top) > (viewport.height / 2) && field.bottom > (viewport.height / 2);
-
-      if (cond) {
-        return true;
-      }
-
-    }
-
-    // Partially in view
-    buffered = field.height * this.threshold;
-    partialView = ((viewport.bottom - buffered) >= field.top && (field.bottom - buffered) > viewport.top);
-
-    return partialView;
+    return isInViewport(element);
   }
 
   look = () => {

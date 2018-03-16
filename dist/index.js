@@ -16,8 +16,7 @@
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.getWindowScrollTop = getWindowScrollTop;
-  exports.getWindowBounds = getWindowBounds;
+  exports.isInViewport = isInViewport;
 
   function _classCallCheck(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
@@ -46,32 +45,18 @@
   var defaults = exports.defaults = {
     callback: function callback() {},
     lookInterval: 1,
-    reportInterval: 10,
-    threshold: 0.5
+    reportInterval: 10
   };
 
-  function getWindowScrollTop() {
-    if (typeof pageYOffset !== 'undefined') {
-      // Most browsers except IE before 9
-      return pageYOffset;
-    } else {
-      var B = document.body; // IE 'quirks'
-      var D = document.documentElement; // IE with doctype
-      D = D.clientHeight ? D : B;
-      return D.scrollTop;
-    }
-  }
-
-  function getWindowBounds() {
-    var top = getWindowScrollTop();
-    var height = window.innerHeight;
-
-    return {
-      bottom: top + height,
-      height: height,
-      top: getWindowScrollTop(),
-      width: window.innerWidth
-    };
+  /*! isInViewport.js | (c) 2017 Chris Ferdinandi | MIT License | http://github.com/cferdinandi/isInViewport */
+  /**
+   * Determine if an element is in the viewport
+   * @param  {Node}    elem The element
+   * @return {Boolean}      Returns true if element is in the viewport
+   */
+  function isInViewport(elem) {
+    var distance = elem.getBoundingClientRect();
+    return distance.top >= 0 && distance.left >= 0 && distance.bottom <= (window.innerHeight || document.documentElement.clientHeight) && distance.right <= (window.innerWidth || document.documentElement.clientWidth);
   }
 
   var Screentimer = function () {
@@ -144,33 +129,7 @@
           return false;
         }
 
-        var field = element.getBoundingClientRect();
-        var viewport = getWindowBounds();
-
-        var cond = void 0;
-        var buffered = void 0;
-        var partialView = void 0;
-
-        // Field entirely within viewport
-        if (field.bottom <= viewport.bottom && field.top >= 0) {
-          return true;
-        }
-
-        // Field bigger than viewport
-        if (field.height > viewport.height) {
-
-          cond = viewport.bottom - field.top > viewport.height / 2 && field.bottom > viewport.height / 2;
-
-          if (cond) {
-            return true;
-          }
-        }
-
-        // Partially in view
-        buffered = field.height * this.threshold;
-        partialView = viewport.bottom - buffered >= field.top && field.bottom - buffered > viewport.top;
-
-        return partialView;
+        return isInViewport(element);
       }
     }, {
       key: 'startTimer',
