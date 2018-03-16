@@ -138,7 +138,8 @@
     _createClass(Screentimer, [{
       key: 'onScreen',
       value: function onScreen() {
-        var field = this.element.getBoundingClientRect();
+        var element = typeof this.element === 'function' ? this.element() : this.element;
+        var field = element.getBoundingClientRect();
         var viewport = getWindowBounds();
 
         var cond = void 0;
