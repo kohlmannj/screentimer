@@ -48,15 +48,19 @@
     reportInterval: 10
   };
 
-  /*! isInViewport.js | (c) 2017 Chris Ferdinandi | MIT License | http://github.com/cferdinandi/isInViewport */
-  /**
-   * Determine if an element is in the viewport
-   * @param  {Node}    elem The element
-   * @return {Boolean}      Returns true if element is in the viewport
-   */
-  function isInViewport(elem) {
-    var distance = elem.getBoundingClientRect();
-    return distance.top >= 0 && distance.left >= 0 && distance.bottom <= (window.innerHeight || document.documentElement.clientHeight) && distance.right <= (window.innerWidth || document.documentElement.clientWidth);
+  function isInViewport(element) {
+    if (!element) {
+      return false;
+    }
+
+    var range = { top: 0, height: 1 };
+    var wH = window.innerHeight;
+    var bcr = element.getBoundingClientRect();
+    var top = bcr.top + pageYOffset;
+    var height = bcr.height;
+    var bottom = top + height;
+
+    return pageYOffset + wH * (range.top + range.height) > top && pageYOffset + wH * range.top < bottom;
   }
 
   var Screentimer = function () {
@@ -126,6 +130,8 @@
         if (!element) {
           return false;
         }
+
+        var inViewport = isInViewport(element);
 
         return isInViewport(element);
       }

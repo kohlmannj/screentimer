@@ -4,19 +4,21 @@ export const defaults = {
   reportInterval: 10,
 };
 
-/*! isInViewport.js | (c) 2017 Chris Ferdinandi | MIT License | http://github.com/cferdinandi/isInViewport */
-/**
- * Determine if an element is in the viewport
- * @param  {Node}    elem The element
- * @return {Boolean}      Returns true if element is in the viewport
- */
-export function isInViewport(elem) {
-  var distance = elem.getBoundingClientRect();
+export function isInViewport(element) {
+  if (!element) {
+    return false;
+  }
+
+  const range = { top: 0, height: 1 };
+  const wH = window.innerHeight;
+  const bcr = element.getBoundingClientRect();
+  const top = bcr.top + pageYOffset;
+  const height = bcr.height;
+  const bottom = top + height;
+
   return (
-      distance.top >= 0 &&
-      distance.left >= 0 &&
-      distance.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-      distance.right <= (window.innerWidth || document.documentElement.clientWidth)
+    pageYOffset + (wH * (range.top + range.height)) > top &&
+    pageYOffset + (wH * range.top) < bottom
   );
 }
 
@@ -58,6 +60,8 @@ export default class Screentimer {
     if (!element) {
       return false;
     }
+    
+    const inViewport = isInViewport(element);
 
     return isInViewport(element);
   }

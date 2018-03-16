@@ -9,11 +9,15 @@
     .spacer {
       height: 100vw;
     }
+
+    #my-element {
+      background: #ccc;
+    }
   </style>
 </head>
 <body>
   <div class="spacer"></div>
-  <div id="my-element">My element has been on-screen for <span id="count">0</span> seconds.</div>
+  <div class="spacer" id="my-element">My element has been on-screen for <span id="count">0</span> seconds.</div>
   <div class="spacer"></div>
 
   <script src="../dist/index.js"></script>
@@ -25,7 +29,9 @@
         const countSpan = document.querySelector('#count');
         if (countSpan) {
           const lastCount = parseInt(countSpan.textContent, 10);
-          countSpan.textContent = lastCount + props.seconds;
+          const newCount = lastCount + props.seconds;
+          console.log(`My element has been on-screen for ${newCount} seconds.`);
+          countSpan.textContent = newCount;
         }
       }
     );
