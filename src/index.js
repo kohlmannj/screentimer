@@ -6,11 +6,15 @@ export const defaults = {
 };
 
 export function getWindowScrollTop() {
-  return (
-    document.documentElement.scrollTop || 
-    document.body.parentNode.scrollTop ||
-    document.body.scrollTop
-  );
+  if (typeof pageYOffset !== 'undefined') {
+      // Most browsers except IE before 9
+      return pageYOffset;
+  } else {
+    const B = document.body; // IE 'quirks'
+    let D = document.documentElement; // IE with doctype
+    D = (D.clientHeight) ? D : B;
+    return D.scrollTop;
+  }
 }
 
 export function getWindowBounds() {
@@ -26,7 +30,7 @@ export function getWindowBounds() {
 }
 
 export default class Screentimer {
-  constructor(element, callback, { lookInterval, reportInterval, threshold }) {
+  constructor(element, callback, { lookInterval, reportInterval, threshold } = {}) {
     this.looker = null;
     this.reporter = null;
 
@@ -34,6 +38,11 @@ export default class Screentimer {
     this.started = false;
 
     this.element = element;
+
+    if (!this.element) {
+      throw new Error('Screentimer constructor: `element` argument is falsy');
+    }
+
     this.callback = callback || defaults.callback;
     this.lookInterval = lookInterval || defaults.lookInterval;
     this.reportInterval = reportInterval || defaults.reportInterval;
@@ -54,28 +63,34 @@ export default class Screentimer {
   };
 
   onScreen() {
-    const windowBounds = getWindowBounds();
-    const elementBounds = this.element.getBoundingClientRect();
+    const field = this.element.getBoundingClientRect();
+    const viewport = getWindowBounds();
 
-    // Element is entirely within the window bounds
-    if (elementBounds.bottom <= windowBounds.bottom && elementBounds.top >= windowBounds.top) {
+    let cond;
+    let buffered;
+    let partialView;
+
+    // Field entirely within viewport
+    if ((field.bottom <= viewport.bottom) && (field.top >= 0)) {
       return true;
     }
 
-    // Element bounds are larger than that of the window bounds
-    if (elementBounds.height > windowBounds.height) {
-      return (
-        (windowBounds.bottom - elementBounds.top) > (windowBounds.height / 2) &&
-        (elementBounds.bottom - windowBounds.top) > (windowBounds.height / 2)
-      );
+     // Field bigger than viewport
+    if (field.height > viewport.height) {
+
+      cond = (viewport.bottom - field.top) > (viewport.height / 2) && field.bottom > (viewport.height / 2);
+
+      if (cond) {
+        return true;
+      }
+
     }
 
-    // Element is partially in view
-    const buffered = elementBounds.height * this.threshold;
-    return (
-      (windowBounds.bottom - buffered) >= elementBounds.top &&
-      (elementBounds.bottom - buffered) > windowBounds.top
-    );
+    // Partially in view
+    buffered = field.height * this.threshold;
+    partialView = ((viewport.bottom - buffered) >= field.top && (field.bottom - buffered) > viewport.top);
+
+    return partialView;
   }
 
   look = () => {
@@ -92,14 +107,13 @@ export default class Screentimer {
       this.counter = 0;
 
       if (typeof this.callback === 'function') {
-        this.callback(count);
+        this.callback({ count, seconds: count * this.lookInterval });
       }
     }
   }
 
   startTimer() {
     if (!this.started) {
-      this.look();
       this.started = true;
     }
 

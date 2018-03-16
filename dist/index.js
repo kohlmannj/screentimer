@@ -94,11 +94,8 @@
       };
 
       this.look = function () {
-        console.log('Looking...');
         if (_this.onScreen()) {
-          console.log('    ...on-screen');
           _this.counter += 1;
-          console.log('this.counter', _this.counter);
         }
       };
 
@@ -144,9 +141,9 @@
         var field = this.element.getBoundingClientRect();
         var viewport = getWindowBounds();
 
-        var cond, buffered, partialView;
-
-        debugger;
+        var cond = void 0;
+        var buffered = void 0;
+        var partialView = void 0;
 
         // Field entirely within viewport
         if (field.bottom <= viewport.bottom && field.top >= 0) {

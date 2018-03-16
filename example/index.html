@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Page Title</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    .spacer {
+      height: 100vw;
+    }
+  </style>
+</head>
+<body>
+  <div class="spacer"></div>
+  <div id="my-element">My element has been on-screen for <span id="count">0</span> seconds.</div>
+  <div class="spacer"></div>
+
+  <script src="../dist/index.js"></script>
+  <script>
+    const Screentimer = window.index.default;
+    const timer = new Screentimer(
+      document.querySelector('#my-element'),
+      props => {
+        const countSpan = document.querySelector('#count');
+        if (countSpan) {
+          const lastCount = parseInt(countSpan.textContent, 10);
+          countSpan.textContent = lastCount + props.seconds;
+        }
+      }
+    );
+  </script>
+</body>
+</html>
