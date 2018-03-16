@@ -51,7 +51,15 @@
   };
 
   function getWindowScrollTop() {
-    return document.documentElement.scrollTop || document.body.parentNode.scrollTop || document.body.scrollTop;
+    if (typeof pageYOffset !== 'undefined') {
+      // Most browsers except IE before 9
+      return pageYOffset;
+    } else {
+      var B = document.body; // IE 'quirks'
+      var D = document.documentElement; // IE with doctype
+      D = D.clientHeight ? D : B;
+      return D.scrollTop;
+    }
   }
 
   function getWindowBounds() {
@@ -67,10 +75,11 @@
   }
 
   var Screentimer = function () {
-    function Screentimer(element, callback, _ref) {
+    function Screentimer(element, callback) {
       var _this = this;
 
-      var lookInterval = _ref.lookInterval,
+      var _ref = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
+          lookInterval = _ref.lookInterval,
           reportInterval = _ref.reportInterval,
           threshold = _ref.threshold;
 
@@ -85,8 +94,11 @@
       };
 
       this.look = function () {
+        console.log('Looking...');
         if (_this.onScreen()) {
+          console.log('    ...on-screen');
           _this.counter += 1;
+          console.log('this.counter', _this.counter);
         }
       };
 
@@ -98,7 +110,7 @@
           _this.counter = 0;
 
           if (typeof _this.callback === 'function') {
-            _this.callback(count);
+            _this.callback({ count: count, seconds: count * _this.lookInterval });
           }
         }
       };
@@ -110,6 +122,11 @@
       this.started = false;
 
       this.element = element;
+
+      if (!this.element) {
+        throw new Error('Screentimer constructor: `element` argument is falsy');
+      }
+
       this.callback = callback || defaults.callback;
       this.lookInterval = lookInterval || defaults.lookInterval;
       this.reportInterval = reportInterval || defaults.reportInterval;
@@ -124,28 +141,38 @@
     _createClass(Screentimer, [{
       key: 'onScreen',
       value: function onScreen() {
-        var windowBounds = getWindowBounds();
-        var elementBounds = this.element.getBoundingClientRect();
+        var field = this.element.getBoundingClientRect();
+        var viewport = getWindowBounds();
 
-        // Element is entirely within the window bounds
-        if (elementBounds.bottom <= windowBounds.bottom && elementBounds.top >= windowBounds.top) {
+        var cond, buffered, partialView;
+
+        debugger;
+
+        // Field entirely within viewport
+        if (field.bottom <= viewport.bottom && field.top >= 0) {
           return true;
         }
 
-        // Element bounds are larger than that of the window bounds
-        if (elementBounds.height > windowBounds.height) {
-          return windowBounds.bottom - elementBounds.top > windowBounds.height / 2 && elementBounds.bottom - windowBounds.top > windowBounds.height / 2;
+        // Field bigger than viewport
+        if (field.height > viewport.height) {
+
+          cond = viewport.bottom - field.top > viewport.height / 2 && field.bottom > viewport.height / 2;
+
+          if (cond) {
+            return true;
+          }
         }
 
-        // Element is partially in view
-        var buffered = elementBounds.height * this.threshold;
-        return windowBounds.bottom - buffered >= elementBounds.top && elementBounds.bottom - buffered > windowBounds.top;
+        // Partially in view
+        buffered = field.height * this.threshold;
+        partialView = viewport.bottom - buffered >= field.top && field.bottom - buffered > viewport.top;
+
+        return partialView;
       }
     }, {
       key: 'startTimer',
       value: function startTimer() {
         if (!this.started) {
-          this.look();
           this.started = true;
         }
 
@@ -178,3 +205,4 @@
 
   exports.default = Screentimer;
 });
+//# sourceMappingURL=index.js.map

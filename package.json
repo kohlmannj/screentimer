@@ -1,6 +1,6 @@
 {
   "name": "screentimer",
-  "version": "0.9.1",
+  "version": "1.0.0",
   "description": "An ES6 class, jQuery-free version of robflaherty/screentime.",
   "main": "dist/index.js",
   "module": "src/index.js",
@@ -8,7 +8,7 @@
   "author": "Joseph Kohlmann <joseph.kohlmann@nytimes.com>",
   "license": "MIT",
   "scripts": {
-    "build": "babel src --out-dir dist",
+    "build": "babel src --source-maps --out-dir dist",
     "precommit": "npm run build && git add dist",
     "prepublish": "npm run precommit",
     "release": "np"
