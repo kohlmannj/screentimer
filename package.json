@@ -3,7 +3,6 @@
   "version": "1.0.2",
   "description": "An ES6 class, jQuery-free version of robflaherty/screentime.",
   "main": "dist/index.js",
-  "module": "src/index.js",
   "repository": "https://github.com/kohlmannj/screentimer",
   "author": "Joseph Kohlmann <joseph.kohlmann@nytimes.com>",
   "license": "MIT",
