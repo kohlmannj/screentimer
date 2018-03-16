@@ -1,4 +1,5 @@
 {
+  "moduleId": "Screentimer",
   "presets": [
     ["env", {
       "modules": "umd"
