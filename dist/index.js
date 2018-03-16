@@ -65,8 +65,7 @@
 
       var _ref = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
           lookInterval = _ref.lookInterval,
-          reportInterval = _ref.reportInterval,
-          threshold = _ref.threshold;
+          reportInterval = _ref.reportInterval;
 
       _classCallCheck(this, Screentimer);
 
@@ -112,7 +111,6 @@
       this.callback = callback || defaults.callback;
       this.lookInterval = lookInterval || defaults.lookInterval;
       this.reportInterval = reportInterval || defaults.reportInterval;
-      this.threshold = threshold || defaults.threshold;
 
       this.startTimer();
 

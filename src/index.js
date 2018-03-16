@@ -21,7 +21,7 @@ export function isInViewport(elem) {
 }
 
 export default class Screentimer {
-  constructor(element, callback, { lookInterval, reportInterval, threshold } = {}) {
+  constructor(element, callback, { lookInterval, reportInterval } = {}) {
     this.looker = null;
     this.reporter = null;
 
@@ -37,7 +37,6 @@ export default class Screentimer {
     this.callback = callback || defaults.callback;
     this.lookInterval = lookInterval || defaults.lookInterval;
     this.reportInterval = reportInterval || defaults.reportInterval;
-    this.threshold = threshold || defaults.threshold;
 
     this.startTimer();
 
