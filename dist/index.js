@@ -138,7 +138,9 @@
     }, {
       key: 'startTimer',
       value: function startTimer() {
-        if (!this.started) {
+        var force = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
+        if (force || !this.started) {
           this.looker = setInterval(this.look, this.lookInterval * 1000);
           this.reporter = setInterval(this.report, this.reportInterval * 1000);
           this.started = true;
@@ -147,7 +149,9 @@
     }, {
       key: 'stopTimer',
       value: function stopTimer() {
-        if (this.started) {
+        var force = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
+        if (force || this.started) {
           clearInterval(this.looker);
           clearInterval(this.reporter);
           this.started = false;
@@ -156,9 +160,10 @@
     }, {
       key: 'reset',
       value: function reset() {
-        this.stopTimer();
+        // Pass `true` to both stopTimer() and startTimer() to `force` them
+        this.stopTimer(true);
         this.counter = 0;
-        this.startTimer();
+        this.startTimer(true);
       }
     }, {
       key: 'destroy',

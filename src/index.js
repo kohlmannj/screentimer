@@ -85,16 +85,16 @@ export default class Screentimer {
     }
   }
 
-  startTimer() {
-    if (!this.started) {
+  startTimer(force = false) {
+    if (force || !this.started) {
       this.looker = setInterval(this.look, this.lookInterval * 1000);
       this.reporter = setInterval(this.report, this.reportInterval * 1000);
       this.started = true;
     }
   }
 
-  stopTimer() {
-    if (this.started) {
+  stopTimer(force = false) {
+    if (force || this.started) {
       clearInterval(this.looker);
       clearInterval(this.reporter);
       this.started = false;
@@ -102,9 +102,10 @@ export default class Screentimer {
   }
 
   reset() {
-    this.stopTimer();
+    // Pass `true` to both stopTimer() and startTimer() to `force` them
+    this.stopTimer(true);
     this.counter = 0;
-    this.startTimer();
+    this.startTimer(true);
   }
 
   destroy() {
