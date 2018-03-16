@@ -1,6 +1,6 @@
 {
   "name": "screentimer",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "description": "An ES6 class, jQuery-free version of robflaherty/screentime.",
   "main": "dist/index.js",
   "repository": "https://github.com/kohlmannj/screentimer",
