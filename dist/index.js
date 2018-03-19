@@ -53,8 +53,11 @@
   function calculateFractionalVisibility(element) {
     var windowHeight = window.innerHeight;
     var docScroll = pageYOffset;
-    var divPosition = element.offsetTop;
-    var divHeight = element.getBoundingClientRect().height;
+    var divPosition = element.offsetTop + element.parentElement ? element.parentElement.offsetTop : 0;
+
+    var _element$getBoundingC = element.getBoundingClientRect(),
+        divHeight = _element$getBoundingC.height;
+
     var hiddenBefore = docScroll - divPosition;
     var hiddenAfter = divPosition + divHeight - (docScroll + windowHeight);
 

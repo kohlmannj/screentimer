@@ -9,25 +9,25 @@ export const defaults = {
 export function calculateFractionalVisibility(element) {
   const windowHeight = window.innerHeight;
   const docScroll = pageYOffset;
-  const divPosition = element.offsetTop;
-  const divHeight = element.getBoundingClientRect().height;
+  const divPosition = element.offsetTop + element.parentElement ? element.parentElement.offsetTop : 0;
+  const { height: divHeight } = element.getBoundingClientRect();
   const hiddenBefore = docScroll - divPosition;
   const hiddenAfter = (divPosition + divHeight) - (docScroll + windowHeight);
 
   if ((docScroll > divPosition + divHeight) || (divPosition > docScroll + windowHeight)) {
-      return 0;
+    return 0;
   } else {
-      var result = 1;
+    let result = 1;
 
-      if (hiddenBefore > 0) {
-          result -= hiddenBefore / divHeight;
-      }
+    if (hiddenBefore > 0) {
+        result -= hiddenBefore / divHeight;
+    }
 
-      if (hiddenAfter > 0) {
-          result -= hiddenAfter / divHeight;
-      }
+    if (hiddenAfter > 0) {
+        result -= hiddenAfter / divHeight;
+    }
 
-      return result;
+    return result;
   }
 }
 
