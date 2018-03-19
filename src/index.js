@@ -5,11 +5,21 @@ export const defaults = {
   threshold: 0.5,
 };
 
+// @see https://github.com/nefe/You-Dont-Need-jQuery#2.3
+export function getOffset(el) {
+  const box = el.getBoundingClientRect();
+
+  return {
+    top: box.top + window.pageYOffset - document.documentElement.clientTop,
+    left: box.left + window.pageXOffset - document.documentElement.clientLeft
+  };
+}
+
 // @see https://stackoverflow.com/a/33860876
 export function calculateFractionalVisibility(element) {
   const windowHeight = window.innerHeight;
   const docScroll = pageYOffset;
-  const divPosition = element.offsetTop + element.parentElement ? element.parentElement.offsetTop : 0;
+  const { top: divPosition } = getOffset(element);
   const { height: divHeight } = element.getBoundingClientRect();
   const hiddenBefore = docScroll - divPosition;
   const hiddenAfter = (divPosition + divHeight) - (docScroll + windowHeight);

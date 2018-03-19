@@ -16,6 +16,7 @@
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
+  exports.getOffset = getOffset;
   exports.calculateFractionalVisibility = calculateFractionalVisibility;
 
   function _classCallCheck(instance, Constructor) {
@@ -49,11 +50,23 @@
     threshold: 0.5
   };
 
+  // @see https://github.com/nefe/You-Dont-Need-jQuery#2.3
+  function getOffset(el) {
+    var box = el.getBoundingClientRect();
+
+    return {
+      top: box.top + window.pageYOffset - document.documentElement.clientTop,
+      left: box.left + window.pageXOffset - document.documentElement.clientLeft
+    };
+  }
+
   // @see https://stackoverflow.com/a/33860876
   function calculateFractionalVisibility(element) {
     var windowHeight = window.innerHeight;
     var docScroll = pageYOffset;
-    var divPosition = element.offsetTop + element.parentElement ? element.parentElement.offsetTop : 0;
+
+    var _getOffset = getOffset(element),
+        divPosition = _getOffset.top;
 
     var _element$getBoundingC = element.getBoundingClientRect(),
         divHeight = _element$getBoundingC.height;
