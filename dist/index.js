@@ -16,7 +16,7 @@
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.isInViewport = isInViewport;
+  exports.calculateFractionalVisibility = calculateFractionalVisibility;
 
   function _classCallCheck(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
@@ -45,22 +45,34 @@
   var defaults = exports.defaults = {
     callback: function callback() {},
     lookInterval: 1,
-    reportInterval: 10
+    reportInterval: 10,
+    threshold: 0.5
   };
 
-  function isInViewport(element) {
-    if (!element) {
-      return false;
+  // @see https://stackoverflow.com/a/33860876
+  function calculateFractionalVisibility(element) {
+    var windowHeight = window.innerHeight;
+    var docScroll = pageYOffset;
+    var divPosition = element.offsetTop;
+    var divHeight = element.getBoundingClientRect().height;
+    var hiddenBefore = docScroll - divPosition;
+    var hiddenAfter = divPosition + divHeight - (docScroll + windowHeight);
+
+    if (docScroll > divPosition + divHeight || divPosition > docScroll + windowHeight) {
+      return 0;
+    } else {
+      var result = 1;
+
+      if (hiddenBefore > 0) {
+        result -= hiddenBefore / divHeight;
+      }
+
+      if (hiddenAfter > 0) {
+        result -= hiddenAfter / divHeight;
+      }
+
+      return result;
     }
-
-    var range = { top: 0, height: 1 };
-    var wH = window.innerHeight;
-    var bcr = element.getBoundingClientRect();
-    var top = bcr.top + pageYOffset;
-    var height = bcr.height;
-    var bottom = top + height;
-
-    return pageYOffset + wH * (range.top + range.height) > top && pageYOffset + wH * range.top < bottom;
   }
 
   var Screentimer = function () {
@@ -69,7 +81,8 @@
 
       var _ref = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
           lookInterval = _ref.lookInterval,
-          reportInterval = _ref.reportInterval;
+          reportInterval = _ref.reportInterval,
+          threshold = _ref.threshold;
 
       _classCallCheck(this, Screentimer);
 
@@ -115,6 +128,7 @@
       this.callback = callback || defaults.callback;
       this.lookInterval = lookInterval || defaults.lookInterval;
       this.reportInterval = reportInterval || defaults.reportInterval;
+      this.threshold = threshold || defaults.threshold;
 
       this.startTimer();
 
@@ -131,9 +145,7 @@
           return false;
         }
 
-        var inViewport = isInViewport(element);
-
-        return isInViewport(element);
+        return calculateFractionalVisibility(element) >= this.threshold;
       }
     }, {
       key: 'startTimer',

@@ -2,28 +2,37 @@ export const defaults = {
   callback: () => {},
   lookInterval: 1,
   reportInterval: 10,
+  threshold: 0.5,
 };
 
-export function isInViewport(element) {
-  if (!element) {
-    return false;
+// @see https://stackoverflow.com/a/33860876
+export function calculateFractionalVisibility(element) {
+  const windowHeight = window.innerHeight;
+  const docScroll = pageYOffset;
+  const divPosition = element.offsetTop;
+  const divHeight = element.getBoundingClientRect().height;
+  const hiddenBefore = docScroll - divPosition;
+  const hiddenAfter = (divPosition + divHeight) - (docScroll + windowHeight);
+
+  if ((docScroll > divPosition + divHeight) || (divPosition > docScroll + windowHeight)) {
+      return 0;
+  } else {
+      var result = 1;
+
+      if (hiddenBefore > 0) {
+          result -= hiddenBefore / divHeight;
+      }
+
+      if (hiddenAfter > 0) {
+          result -= hiddenAfter / divHeight;
+      }
+
+      return result;
   }
-
-  const range = { top: 0, height: 1 };
-  const wH = window.innerHeight;
-  const bcr = element.getBoundingClientRect();
-  const top = bcr.top + pageYOffset;
-  const height = bcr.height;
-  const bottom = top + height;
-
-  return (
-    pageYOffset + (wH * (range.top + range.height)) > top &&
-    pageYOffset + (wH * range.top) < bottom
-  );
 }
 
 export default class Screentimer {
-  constructor(element, callback, { lookInterval, reportInterval } = {}) {
+  constructor(element, callback, { lookInterval, reportInterval, threshold } = {}) {
     this.looker = null;
     this.reporter = null;
 
@@ -39,6 +48,7 @@ export default class Screentimer {
     this.callback = callback || defaults.callback;
     this.lookInterval = lookInterval || defaults.lookInterval;
     this.reportInterval = reportInterval || defaults.reportInterval;
+    this.threshold = threshold || defaults.threshold;
 
     this.startTimer();
 
@@ -56,14 +66,12 @@ export default class Screentimer {
 
   onScreen() {
     const element = typeof this.element === 'function' ? this.element() : this.element;
-
+    
     if (!element) {
       return false;
     }
-    
-    const inViewport = isInViewport(element);
-
-    return isInViewport(element);
+  
+    return calculateFractionalVisibility(element) >= this.threshold;
   }
 
   look = () => {
